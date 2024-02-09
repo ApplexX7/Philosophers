@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:12 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/09 19:20:05 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/09 20:04:17 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,11 @@ int	main(int ac, char **av)
 			return (free(trea), 0);
 		init_forks(trea);
 		create_philos(trea);
+		pthread_mutex_destroy(&trea->deadlock);
+		pthread_mutex_destroy(&trea->print);
 		free(trea->philo);
 		free(trea->forks);
 		free(trea);
-		pthread_mutex_destroy(&trea->deadlock);
-		pthread_mutex_destroy(&trea->print);
 	}
 	else
 		write(1, "Input error\n", 12);
