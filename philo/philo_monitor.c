@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:39:51 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/09 19:03:44 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/09 19:20:15 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,8 @@ int	dead_loop(t_philo *philo)
 
 int	check_philos_dead(t_philo philo)
 {
-	pthread_mutex_lock(philo.deadlock);
 	if ((unsigned long)philo.time_to_die <= get_time() - philo.last_eat)
-	{
-		pthread_mutex_unlock(philo.deadlock);
-		return (1);	
-	}
-	pthread_mutex_unlock(philo.deadlock);
+		return (1);
 	return (0);
 }
 
@@ -45,9 +40,9 @@ void	*monitoring(void *thread)
 	threads = (t_threads *)thread;
 	while (1)
 	{
-		// pthread_mutex_lock(threads->philo[i].mutex);
-		// threads->not_died = threads->philo[i].not_died;
-		// pthread_mutex_unlock(threads->philo[i].mutex);
+		pthread_mutex_lock(threads->philo[i].mutex);
+		threads->not_died = threads->philo[i].not_died;
+		pthread_mutex_unlock(threads->philo[i].mutex);
 		if (check_philos_dead(threads->philo[i]) == 1 && !number_of_eat(&threads->philo[i]))
 		{
 			pthread_mutex_lock(threads->philo[i].print);
