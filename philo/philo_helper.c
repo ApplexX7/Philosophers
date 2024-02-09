@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:22:20 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/07 17:57:01 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/09 19:03:32 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,14 @@
 
 int	number_of_eat(t_philo *philo)
 {
+	pthread_mutex_lock(philo->mutex);
 	if (philo->number_of_eat == philo->eating)
 	{
-		pthread_mutex_lock(philo->mutex);
 		philo->not_died = 1;
 		pthread_mutex_unlock(philo->mutex);
 		return (1);
 	}
+	pthread_mutex_unlock(philo->mutex);
 	return (0);
 }
 

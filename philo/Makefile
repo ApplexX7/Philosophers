@@ -6,7 +6,7 @@
 #    By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/04 15:42:18 by mohilali          #+#    #+#              #
-#    Updated: 2024/02/09 18:47:14 by mohilali         ###   ########.fr        #
+#    Updated: 2024/02/09 19:05:45 by mohilali         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEADER = philo.h
 all: $(NAME)
 
 $(NAME) : $(SRB)
-	$(CC) $(SRB) -o $(NAME)
+	$(CC) $(SRB) -o $(NAME) -fsanitize=thread
 
 %.o : %.c $(HEADER)
 	$(CC) $(CFALGS) -c -pthread $< -o $@
