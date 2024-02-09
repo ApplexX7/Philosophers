@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:24:56 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/05 11:20:42 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/07 18:20:00 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	ft_eating(t_philo	*philo)
 	philo->eating++;
 	pthread_mutex_unlock(philo->r_fork);
 	pthread_mutex_unlock(philo->l_fork);
+	number_of_eat(philo);
 }
 
 void	*routine(void *philo)
@@ -73,5 +74,6 @@ void	*routine(void *philo)
 		ft_sleeping(*philos);
 		ft_thinking(*philos);
 	}
+	*(philos->exit) += 1;
 	return (NULL);
 }

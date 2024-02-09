@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:33 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/05 12:19:07 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/07 18:17:50 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				eating;
+	int				*exit;
 	int				id;
 	int				number_of_eat;
 	int				not_died;
@@ -58,6 +59,7 @@ typedef struct s_threads
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_eats;
+	int				exit;
 	int				not_died;
 }	t_threads;
 

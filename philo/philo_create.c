@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:47:40 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/05 12:34:23 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/07 18:18:54 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	ft_create_observe(pthread_t *observer, t_threads *threads)
 void	philo_info(t_threads *threads, int i, int id, long start)
 {
 	threads->philo[i].id = id;
+	threads->philo[i].exit = &threads->exit;
 	threads->philo[i].eating = 0;
 	threads->philo[i].not_died = 0;
 	threads->philo[i].start_time = start;

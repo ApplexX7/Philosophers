@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:12 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/05 12:32:20 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:06:54 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,20 @@ int	init_time(t_threads *trea, char **av)
 	pthread_mutex_init(&trea->print, NULL);
 	pthread_mutex_init(&trea->deadlock, NULL);
 	pthread_mutex_init(&trea->mutex, NULL);
+	trea->exit = 0;
 	trea->number_of_philo = ft_atoi(av[1]);
+	if (trea->number_of_philo == 0)
+		return 1;
 	trea->time_to_die = ft_atoi(av[2]);
 	trea->time_to_eat = ft_atoi(av[3]);
 	trea->time_to_sleep = ft_atoi(av[4]);
 	trea->died = 0;
 	if (av[5])
+	{
 		trea->number_of_eats = ft_atoi(av[5]);
+		if (trea->number_of_eats == 0)
+			return 1;
+	}
 	else
 		trea->number_of_eats = -1;
 	return (0);
