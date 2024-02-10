@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:24:56 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/07 18:20:00 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 15:06:23 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,9 @@ void	ft_eating(t_philo	*philo)
 		"is eating\n", *(philo->died));
 	pthread_mutex_unlock(philo->print);
 	ft_usleep(philo->time_to_eat);
+	pthread_mutex_lock(philo->deadlock);
 	philo->eating++;
+	pthread_mutex_unlock(philo->deadlock);
 	pthread_mutex_unlock(philo->r_fork);
 	pthread_mutex_unlock(philo->l_fork);
 	number_of_eat(philo);
@@ -74,6 +76,8 @@ void	*routine(void *philo)
 		ft_sleeping(*philos);
 		ft_thinking(*philos);
 	}
+	pthread_mutex_lock(philos->protect);
 	*(philos->exit) += 1;
+	pthread_mutex_unlock(philos->protect);
 	return (NULL);
 }

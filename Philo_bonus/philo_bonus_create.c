@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 12:20:25 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/09 15:54:25 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/09 20:16:34 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,7 @@ static int	init_philos(t_process *philos)
 
 void	create_threads(t_process *philos)
 {
-	int	i;
 
-	i = 0;
 	philos->philo = malloc(sizeof(t_philos) *  philos->number_of_philos);
 	if (!philos->philo)
 		exit(0);

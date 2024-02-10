@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:47:40 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/07 18:18:54 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 15:03:46 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	philo_info(t_threads *threads, int i, int id, long start)
 	threads->philo[i].deadlock = &threads->deadlock;
 	threads->philo[i].print = &threads->print;
 	threads->philo[i].mutex = &threads->mutex;
+	threads->philo[i].protect = &threads->protect;
 	threads->philo[i].number_of_eat = threads->number_of_eats;
 	if (i == threads->number_of_philo - 1)
 		threads->philo[i].l_fork = &threads->forks[0];

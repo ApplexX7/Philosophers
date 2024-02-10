@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:12 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/09 20:04:17 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 15:03:00 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	init_time(t_threads *trea, char **av)
 	pthread_mutex_init(&trea->print, NULL);
 	pthread_mutex_init(&trea->deadlock, NULL);
 	pthread_mutex_init(&trea->mutex, NULL);
+	pthread_mutex_init(&trea->protect, NULL);
 	trea->exit = 0;
 	trea->number_of_philo = ft_atoi(av[1]);
 	trea->time_to_die = ft_atoi(av[2]);

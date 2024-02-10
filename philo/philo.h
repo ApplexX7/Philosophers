@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:33 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/07 18:17:50 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 15:02:46 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ typedef struct s_philo
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*print;
-	pthread_mutex_t	*lock_time;
+	pthread_mutex_t	*deadlock;
+	pthread_mutex_t	*protect;
 	pthread_mutex_t	*mutex;
 	int				number_of_philos;
 	int				time_to_die;
@@ -42,7 +43,6 @@ typedef struct s_philo
 	int				*died;
 	size_t			start_time;
 	size_t			last_eat;
-	pthread_mutex_t	*deadlock;
 }	t_philo;
 
 typedef struct s_threads
@@ -54,6 +54,7 @@ typedef struct s_threads
 	pthread_mutex_t	lock_time;
 	pthread_mutex_t	mutex;
 	pthread_mutex_t	deadlock;
+	pthread_mutex_t	protect;
 	int				number_of_philo;
 	int				time_to_die;
 	int				time_to_eat;
