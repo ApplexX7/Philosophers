@@ -5,66 +5,65 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/09 13:54:32 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/09 20:29:32 by mohilali         ###   ########.fr       */
+/*   Created: 2024/02/12 11:59:46 by mohilali          #+#    #+#             */
+/*   Updated: 2024/02/12 18:36:58 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-
-void	ft_thinking(t_philos	*philo)
-{
-	ft_print_message(philo,philo->id, philo->start_time,
-		"is thinking\n");
-}
-
 void	ft_take_fork(t_philos *philo)
 {
-	ft_print_message(philo ,philo->id, philo->start_time,
-		"has taken a fork\n");
+	sem_wait(philo->sem);
+	print_message(philo->id, philo->start_time, FORKS);
+	sem_post(philo->sem);
 }
 
-void	ft_sleeping(t_philos	*philos)
+void	ft_thinking(t_philos *philo)
 {
-	ft_print_message(philos ,philos->id, philos->start_time,
-		"is sleeping\n");
-	ft_usleep(philos->time_to_sleep);
+	sem_wait(philo->sem);
+	print_message(philo->id, philo->start_time, THINK);
+	sem_post(philo->sem);
 }
 
-void	ft_eating(t_philos *philos)
+void	ft_sleeping(t_philos *philo)
 {
-	sem_wait(philos->forks);
-	if (philos->number_of_philos == 1)
+	sem_wait(philo->sem);
+	print_message(philo->id, philo->start_time, SLEEP);
+	sem_post(philo->sem);
+	ft_usleep(philo->time_sleep);
+}
+
+void	ft_eating(t_philos *philo)
+{
+	sem_wait(philo->sem_forks);
+	ft_take_fork(philo);
+	sem_wait(philo->sem_forks);
+	ft_take_fork(philo);
+	sem_wait(philo->sem_death);
+	if (philo->number_eat != 0)
+		philo->last_time_eat = get_time();
+	philo->number_of_eat++;
+	sem_post(philo->sem_death);
+	sem_wait(philo->sem);
+	philo->check_eat = 0;
+	if (philo->number_eat != 0)
+		print_message(philo->id, philo->start_time, EATING);
+	if (philo->number_of_eat >= philo->number_eat && philo->number_eat > 0)
+		philo->not_died = 1;
+	philo->check_eat = 1;
+	sem_post(philo->sem);
+	ft_usleep(philo->time_eat);
+	sem_post(philo->sem_forks);
+	sem_post(philo->sem_forks);
+}
+
+void	ft_routine(t_philos *philo)
+{
+	while (check_number_of_eat(philo))
 	{
-		ft_take_fork(philos);
-		sem_post(philos->forks);
-		ft_usleep(philos->time_to_die);
-		ft_print_message(philos ,philos->id, philos->start_time, "died\n");
-		exit(0);
+		ft_eating(philo);
+		ft_sleeping(philo);
+		ft_thinking(philo);
 	}
-	ft_take_fork(philos);
-	sem_wait(philos->forks);
-	ft_take_fork(philos);
-	ft_print_message(philos ,philos->id, philos->start_time,
-		"is eating\n");
-	sem_wait(philos->protec);
-	philos->last_eat = get_time();
-	sem_post(philos->protec);
-	philos->eating++;
-	ft_usleep(philos->time_to_eat);
-	sem_post(philos->forks);
-	sem_post(philos->forks);
-}
-
-void	routine(t_philos *philos)
-{
-	ft_thinking(philos);
-	while(exit_loop(philos))
-	{
-		ft_eating(philos);
-		ft_sleeping(philos);
-		ft_thinking(philos);
-	}
-	exit(0);
 }

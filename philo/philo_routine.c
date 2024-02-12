@@ -5,79 +5,82 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/05 09:24:56 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/10 15:06:23 by mohilali         ###   ########.fr       */
+/*   Created: 2024/02/12 17:37:13 by mohilali          #+#    #+#             */
+/*   Updated: 2024/02/12 18:57:51 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_thinking(t_philo	philo)
+void	ft_think(t_philos *philos)
 {
-	pthread_mutex_lock(philo.print);
-	ft_print_message(philo.id, philo.start_time,
-		"is thinking\n", *(philo.died));
-	pthread_mutex_unlock(philo.print);
+	pthread_mutex_lock(philos->print);
+	if (*(philos->died) == 0)
+		print_message(philos->id, philos->start_time, THINK);
+	pthread_mutex_unlock(philos->print);
 }
 
-void	ft_sleeping(t_philo	philo)
+void	ft_take_fork(t_philos *philos)
 {
-	pthread_mutex_lock(philo.print);
-	ft_print_message(philo.id, philo.start_time,
-		"is sleeping\n", *(philo.died));
-	pthread_mutex_unlock(philo.print);
-	ft_usleep(philo.time_to_sleep);
+	pthread_mutex_lock(philos->print);
+	if (*(philos->died) == 0)
+		print_message(philos->id, philos->start_time, FORKS);
+	pthread_mutex_unlock(philos->print);
 }
 
-void	ft_eating(t_philo	*philo)
+void	ft_sleep(t_philos *philos)
 {
-	pthread_mutex_lock(philo->r_fork);
-	if (philo->number_of_philos == 1)
+	pthread_mutex_lock(philos->print);
+	if (*(philos->died) == 0)
+		print_message(philos->id, philos->start_time, SLEEP);
+	pthread_mutex_unlock(philos->print);
+	ft_usleep(philos->time_sleep);
+}
+
+void	ft_eat(t_philos *philos)
+{
+	pthread_mutex_lock(philos->r_fork);
+	if (philos->number_philos == 1)
 	{
-		ft_take_fork(*philo);
-		ft_usleep(philo->time_to_die);
-		pthread_mutex_unlock(philo->r_fork);
+		speacial_case(philos);
 		return ;
 	}
-	ft_take_fork(*philo);
-	pthread_mutex_lock(philo->l_fork);
-	ft_take_fork(*philo);
-	pthread_mutex_lock(philo->deadlock);
-	philo->last_eat = get_time();
-	pthread_mutex_unlock(philo->deadlock);
-	pthread_mutex_lock(philo->print);
-	ft_print_message(philo->id, philo->start_time,
-		"is eating\n", *(philo->died));
-	pthread_mutex_unlock(philo->print);
-	ft_usleep(philo->time_to_eat);
-	pthread_mutex_lock(philo->deadlock);
-	philo->eating++;
-	pthread_mutex_unlock(philo->deadlock);
-	pthread_mutex_unlock(philo->r_fork);
-	pthread_mutex_unlock(philo->l_fork);
-	number_of_eat(philo);
+	ft_take_fork(philos);
+	pthread_mutex_lock(philos->l_fork);
+	ft_take_fork(philos);
+	pthread_mutex_lock(philos->mutex);
+	if (philos->number_eat != 0)
+		philos->last_time_eat = get_time();
+	philos->number_of_eat++;
+	pthread_mutex_unlock(philos->mutex);
+	pthread_mutex_lock(philos->print);
+	philos->check_eat = 0;
+	if (*(philos->died) == 0 && philos->number_eat != 0)
+		print_message(philos->id, philos->start_time, EATING);
+	if (philos->number_of_eat >= philos->number_eat && philos->number_eat > 0)
+		philos->finish_eat = 1;
+	philos->check_eat = 1;
+	pthread_mutex_unlock(philos->print);
+	ft_usleep(philos->time_eat);
+	pthread_mutex_unlock(philos->r_fork);
+	pthread_mutex_unlock(philos->l_fork);
 }
 
-void	*routine(void *philo)
+void	*ft_routine(void *thread_philos)
 {
-	t_philo	*philos;
+	t_philos	*philo;
 
-	philos = (t_philo *)philo;
-	if (philos->id % 2 != 0)
-		ft_thinking(*philos);
-	if (philos->id % 2 == 0)
+	philo = (t_philos *)thread_philos;
+	if (philo->id % 2 == 0)
 	{
-		ft_thinking(*philos);
-		ft_usleep(philos->time_to_eat);
+		ft_think(philo);
+		ft_usleep(philo->time_eat);
 	}
-	while (dead_loop(philos) == 1)
+	while (death_loop(philo))
 	{
-		ft_eating(philos);
-		ft_sleeping(*philos);
-		ft_thinking(*philos);
+		ft_eat(philo);
+		ft_sleep(philo);
+		ft_think(philo);
 	}
-	pthread_mutex_lock(philos->protect);
-	*(philos->exit) += 1;
-	pthread_mutex_unlock(philos->protect);
 	return (NULL);
 }

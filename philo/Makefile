@@ -6,12 +6,12 @@
 #    By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/04 15:42:18 by mohilali          #+#    #+#              #
-#    Updated: 2024/02/10 14:47:07 by mohilali         ###   ########.fr        #
+#    Updated: 2024/02/12 18:55:12 by mohilali         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRC = philo.c philo_utils.c philo_routine.c philo_helper.c \
-		philo_monitor.c philo_create.c
+SRC = philo.c philo_time.c philo_utils.c philo_routine.c philo_create.c philo_help.c \
+	philo_monitoring.c \
 
 SRB = ${SRC:.c=.o}
 
@@ -24,10 +24,10 @@ HEADER = philo.h
 all: $(NAME)
 
 $(NAME) : $(SRB)
-	$(CC) $(SRB) -o $(NAME) -fsanitize=thread -g
+	$(CC) $(SRB) -o $(NAME) -fsanitize=thread
 
 %.o : %.c $(HEADER)
-	$(CC) $(CFALGS) -c -pthread $< -o $@
+	$(CC) $(CFALGS) -pthread -c $< -o $@
 
 clean :
 	$(RM) $(SRB)

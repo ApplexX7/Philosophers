@@ -5,12 +5,17 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/29 19:16:04 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/05 12:21:28 by mohilali         ###   ########.fr       */
+/*   Created: 2024/02/12 14:15:18 by mohilali          #+#    #+#             */
+/*   Updated: 2024/02/12 17:57:52 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	print_message(int id, size_t start_time, char *mssg)
+{
+	printf("%lu %d %s\n", get_time() - start_time, id, mssg);
+}
 
 long	ft_atoi(const char *str)
 {

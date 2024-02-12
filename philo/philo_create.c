@@ -5,98 +5,85 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/05 09:47:40 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/10 15:03:46 by mohilali         ###   ########.fr       */
+/*   Created: 2024/02/12 17:45:03 by mohilali          #+#    #+#             */
+/*   Updated: 2024/02/12 18:31:48 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_destroy_mutex(t_threads *threads)
+void	update_info(t_threads *thread, int i)
+{
+	thread->philos[i].id = i + 1;
+	thread->philos[i].died = &thread->died;
+	thread->philos[i].finish_eat = 0;
+	thread->philos[i].check_eat = 1;
+	thread->philos[i].print = &thread->print;
+	thread->philos[i].mutex = &thread->mutex;
+	thread->philos[i].start_time = thread->start_time;
+	thread->philos[i].last_time_eat = get_time();
+	thread->philos[i].time_death = thread->time_died;
+	thread->philos[i].time_eat = thread->time_eat;
+	thread->philos[i].time_sleep = thread->time_sleep;
+	thread->philos[i].number_eat = thread->number_eat;
+	thread->philos[i].number_philos = thread->number_philos;
+	thread->philos[i].r_fork = &thread->forks[i];
+	if (i == thread->number_philos - 1)
+		thread->philos[i].l_fork = &thread->forks[0];
+	else
+		thread->philos[i].l_fork = &thread->forks[i + 1];
+}
+
+int	create_forks(t_threads *thread)
 {
 	int	i;
 
 	i = 0;
-	while (i < threads->number_of_philo)
+	thread->forks = malloc(sizeof(pthread_mutex_t) * thread->number_philos);
+	if (!thread->forks)
 	{
-		pthread_mutex_destroy(&threads->forks[i]);
+		printf("Error : malloc failed\n");
+		return (1);
+	}
+	while (i < thread->number_philos)
+	{
+		if (pthread_mutex_init(&thread->forks[i], NULL) != 0)
+		{
+			printf("Error : can't create forks\n");
+			return (1);
+		}
 		i++;
 	}
+	pthread_mutex_init(&thread->mutex, NULL);
+	pthread_mutex_init(&thread->print, NULL);
+	return (0);
 }
 
-int	ft_create_observe(pthread_t *observer, t_threads *threads)
-{
-	if (pthread_create(observer, NULL, monitoring, threads) != 0)
-		return (0);
-	return (1);
-}
-
-void	philo_info(t_threads *threads, int i, int id, long start)
-{
-	threads->philo[i].id = id;
-	threads->philo[i].exit = &threads->exit;
-	threads->philo[i].eating = 0;
-	threads->philo[i].not_died = 0;
-	threads->philo[i].start_time = start;
-	threads->philo[i].died = &threads->died;
-	threads->philo[i].last_eat = get_time();
-	threads->philo[i].number_of_philos = threads->number_of_philo;
-	threads->philo[i].time_to_eat = threads->time_to_eat;
-	threads->philo[i].time_to_die = threads->time_to_die;
-	threads->philo[i].time_to_sleep = threads->time_to_sleep;
-	threads->philo[i].r_fork = &threads->forks[i];
-	threads->philo[i].deadlock = &threads->deadlock;
-	threads->philo[i].print = &threads->print;
-	threads->philo[i].mutex = &threads->mutex;
-	threads->philo[i].protect = &threads->protect;
-	threads->philo[i].number_of_eat = threads->number_of_eats;
-	if (i == threads->number_of_philo - 1)
-		threads->philo[i].l_fork = &threads->forks[0];
-	else
-		threads->philo[i].l_fork = &threads->forks[i + 1];
-}
-
-static int	init_philos(t_threads *threads)
-{
-	int		i;
-	int		id;
-	long	start;
-
-	i = 0;
-	id = 1;
-	start = get_time();
-	while (i < threads->number_of_philo)
-	{
-		philo_info(threads, i, id, start);
-		if (pthread_create(&threads->philo[i].tid, NULL, routine,
-				&threads->philo[i]) != 0)
-			return (0);
-		id++;
-		i++;
-	}
-	return (1);
-}
-
-void	create_philos(t_threads *threads)
+void	create_threads(t_threads *thread)
 {
 	int			i;
 	pthread_t	observe;
 
-	threads->philo = malloc(sizeof(t_philo) * threads->number_of_philo);
-	if (!threads->philo)
-		return ;
-	if (!init_philos(threads))
-		return ;
 	i = 0;
-	if (!ft_create_observe(&observe, threads))
-		return ;
-	if (pthread_join(observe, NULL) != 0)
-		return ;
-	while (i < threads->number_of_philo)
+	thread->philos = malloc(sizeof(t_philos) * thread->number_philos);
+	if (!thread->philos)
 	{
-		if (pthread_join(threads->philo[i].tid, NULL) != 0)
+		printf("Error : malloc failed\n");
+		return ;
+	}
+	thread->start_time = get_time();
+	while (i < thread->number_philos)
+	{
+		update_info(thread, i);
+		if (pthread_create(&thread->philos[i].tid, NULL,
+				ft_routine, &thread->philos[i]) != 0)
+		{
+			printf("Error : can't create threads\n");
 			return ;
+		}
 		i++;
 	}
-	ft_destroy_mutex(threads);
+	if (!create_observe(&observe, thread))
+		return ;
+	wait_threads(thread);
 }
