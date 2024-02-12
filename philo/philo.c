@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:03:12 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/10 15:03:00 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 17:11:52 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,17 +40,21 @@ int	init_time(t_threads *trea, char **av)
 	return (0);
 }
 
-void	init_forks(t_threads *trea)
+int	init_forks(t_threads *trea)
 {
 	int	i;
 
 	trea->forks = malloc(sizeof(pthread_mutex_t) * trea->number_of_philo);
+	if (!trea->forks)
+		return (1);
 	i = 0;
 	while (i < trea->number_of_philo)
 	{
-		pthread_mutex_init(&trea->forks[i], NULL);
+		if (pthread_mutex_init(&trea->forks[i], NULL) != 0)
+			return (1);
 		i++;
 	}
+	return (0);
 }
 
 int	main(int ac, char **av)
@@ -64,9 +68,12 @@ int	main(int ac, char **av)
 			return (0);
 		if (init_time(trea, av))
 			return (free(trea), 0);
-		init_forks(trea);
+		if (init_forks(trea))
+			return (free(trea), 0);
 		create_philos(trea);
 		pthread_mutex_destroy(&trea->deadlock);
+		pthread_mutex_destroy(&trea->protect);
+		pthread_mutex_destroy(&trea->mutex);
 		pthread_mutex_destroy(&trea->print);
 		free(trea->philo);
 		free(trea->forks);

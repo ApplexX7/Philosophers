@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:47:40 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/10 15:03:46 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/10 16:48:15 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_destroy_mutex(t_threads *threads)
 
 int	ft_create_observe(pthread_t *observer, t_threads *threads)
 {
-	if (pthread_create(observer, NULL, monitoring, threads) != 0)
+	if (pthread_create(observer, NULL, *monitoring, threads) != 0)
 		return (0);
 	return (1);
 }
