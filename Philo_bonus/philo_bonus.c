@@ -5,111 +5,150 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/11 15:09:23 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/12 12:28:35 by mohilali         ###   ########.fr       */
+/*   Created: 2024/02/05 19:01:18 by mohilali          #+#    #+#             */
+/*   Updated: 2024/02/09 15:56:15 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	destroy_semaphore(t_process *process)
+
+int	exit_loop(t_philos *philos)
 {
-	if (sem_close(process->sem) != 0)
-		(printf("error in closing semaphore"), exit(0));
-	if (sem_close(process->sem_death) != 0)
-		(printf("error in closing semaphore"), exit(0));
-	if (sem_close(process->sem_forks) != 0)
-		(printf("error in closing semaphore"), exit(0));
-	if (sem_unlink(SEM_AMPHORE) != 0)
-		(printf("error in unlink semaphore"), exit(0));
-	if (sem_unlink(SEM_FORKS) != 0)
-		(printf("error in unlink semaphore"), exit(0));
-	if (sem_unlink(SEM_DEATH) != 0)
-		(printf("error in unlink semaphore"), exit(0));
+	if ((philos->eating  >= philos->number_of_eats && philos->number_of_eats >= 0) || philos->died == 1)
+		return (0);
+	return (1);
 }
 
-void	open_semaphore(t_process *process)
+int	check_eating(t_philos *philos)
 {
-	sem_unlink(SEM_AMPHORE);
-	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_DEATH);
-	process->sem = sem_open(SEM_AMPHORE, O_CREAT | O_EXCL, 0644, 1);
-	if (process->sem == SEM_FAILED)
-		(printf("Error : can't open semaphore"), exit(0));
-	process->sem_forks = sem_open(SEM_FORKS, O_CREAT | O_EXCL,
-			0644, process->number_philos);
-	if (process->sem_forks == SEM_FAILED)
-		(printf("Error : can't open semaphore"), exit(0));
-	process->sem_death = sem_open(SEM_DEATH, O_CREAT | O_EXCL, 0644, 1);
-	if (process->sem_death == SEM_FAILED)
-		(printf("Error : can't open semaphore"), exit(0)), exit(0);
+	if (philos->eating >= philos->number_of_eats && philos->number_of_eats != -1)
+		return (1);
+	return 0;
 }
 
-int	parse_input(char **av, t_process *process)
+void	*monitoring(void *philo)
+{
+	t_philos *philos;
+	philos = (t_philos *)philo;
+
+	while (1)
+	{
+		if (check_death(philos) && !check_eating(philos))
+		{
+			sem_post(philos->kill);
+			sem_wait(philos->print);
+			printf("%lu %d died\n", get_time() - philos->start_time, philos->id);
+			philos->died = 1;
+			sem_unlink(SEM_PROTECT);
+			exit(0);
+		}
+	}
+	return NULL;
+}
+
+
+int	init_time(t_process *philos, char **av)
 {
 	int	i;
 
-	i = 0;
+	i = 1;
 	while (av[i])
 	{
 		if (!is_digit(av[i]))
 			return (1);
 		i++;
 	}
-	process->number_philos = ft_atoi(av[1]);
-	process->time_died = ft_atoi(av[2]);
-	process->time_eat = ft_atoi(av[3]);
-	process->time_sleep = ft_atoi(av[4]);
+	philos->id = 0;
+	philos->number_of_philos = ft_atoi(av[1]);
+	philos->time_to_die = ft_atoi(av[2]);
+	philos->time_to_eat = ft_atoi(av[3]);
+	philos->time_to_sleep = ft_atoi(av[4]);
 	if (av[5])
-		process->number_eat = ft_atoi(av[5]);
+		philos->number_of_eats = ft_atoi(av[5]);
 	else
-		process->number_eat = -1;
-	process->pid = malloc(sizeof(long) * process->number_philos);
-	if (!process->pid)
-		(printf("Error: in malloc"), exit(0));
+		philos->number_of_eats = -1;
+	philos->pid = malloc(sizeof(long) * philos->number_of_philos);
+	if (!philos->pid)
+		exit(0);
 	return (0);
 }
 
-void	wait_philos(t_process *process)
+void init_forks(t_process *philos)
 {
-	int		status;
-	size_t	i;
-
-	i = 0;
-	while (1)
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_KILL);
+	sem_unlink(SEM_PRINT);
+	philos->forks = sem_open(SEM_FORKS, O_CREAT | O_EXCL, 0666, philos->number_of_philos);
+	if (philos->forks == SEM_FAILED)
 	{
-		if (waitpid(-1, &status, 0) == -1)
-			break ;
-		if (status >> 8 == 20)
-		{
-			while (i < process->number_philos)
-			{
-				kill(process->pid[i], SIGKILL);
-				i++;
-			}
-			break ;
-		}
+		perror("sem_error:");
+		exit(0);
+	}
+	philos->print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0666, 1);
+	if (philos->print == SEM_FAILED)
+	{
+		perror("sem_error:");
+		exit(0);
+	}
+	philos->kill = sem_open(SEM_KILL, O_CREAT | O_EXCL , 0666, 0);
+	if (philos->kill == SEM_FAILED)
+	{
+		perror("sem_error:");
+		exit(0);
 	}
 }
 
-int	main(int ac, char **av)
+void	*kill_philos(void *philo)
 {
-	t_process	*process;
+	t_process *philos = (t_process *) philo;
+	int i = 0;
 
+	sem_wait(philos->kill);
+	while (i < philos->number_of_philos)
+	{
+		if (kill(philos->pid[i], SIGINT) != 0)
+			perror("error");
+		i++;
+	}
+	return (NULL);
+}
+
+void	ll()
+{
+	system("leaks philo_bonus");
+}
+
+int main(int ac, char **av)
+{
+	t_process *philos;
+	pthread_t	observe;
+	long i;
+	
 	if (ac == 5 || ac == 6)
 	{
-		process = malloc(sizeof(t_process));
-		if (parse_input(av, process))
-			(printf("not a valid arguments"), exit(0));
-		open_semaphore(process);
-		create_philos(process);
-		wait_philos(process);
-		destroy_semaphore(process);
-		free(process->pid);
-		free(process->philo);
-		free(process);
+		// atexit(ll);
+		philos = malloc(sizeof(t_process));
+		if (init_time(philos, av))
+			return (free(philos), 0);
+		init_forks(philos);
+		create_threads(philos);
+		if (pthread_create(&observe, NULL, kill_philos, philos) != 0)
+			exit(0);
+		if (pthread_detach(observe) != 0)
+			exit(0);
+		i = 0;
+		while (i < philos->pid[i])
+		{
+			waitpid(philos->pid[i], NULL, 0);
+			i++;
+		}
+		free(philos->pid);
+		free(philos->philo);
+		free(philos);
+		sem_unlink(SEM_FORKS);
+		sem_unlink(SEM_KILL);
+		sem_unlink(SEM_PRINT);
+		// sem_close(philos->forks);
 	}
-	else
-		printf("not a valid argument!!\n");
-	return (0);
 }
