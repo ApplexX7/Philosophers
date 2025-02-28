@@ -44,18 +44,14 @@ make -C philo_Processes      # Process version
 # Tested on Ryzen 7 5800H | 16GB RAM | Ubuntu 22.04 | 100 iterations
 
 Philosophers/
-├── philo/               # Threads implementation
+├── philo_Threads/       # Threads implementation
 │   ├── includes/        # Mutex headers
 │   ├── src/             # Core threading logic
 │   └── Makefile
-├── philo_bonus/         # Process implementation
+├── philo_Process/       # Process implementation
 │   ├── includes/        # Semaphore headers
 │   ├── src/             # Process management
 │   └── Makefile
-├── tests/               # Test scripts
-├── visuals/             # Demo assets
-└── libft/               # Shared utilities
-
 ```
 ## Choosing an Implementation :
 ```
