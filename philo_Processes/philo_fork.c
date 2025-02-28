@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_bonus_fork.c                                 :+:      :+:    :+:   */
+/*   philo_fork.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:07:53 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/12 13:07:33 by mohilali         ###   ########.fr       */
+/*   Updated: 2025/02/28 15:27:04 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "philo.h"
 
 void	fork_philos(t_process	*process, int i)
 {

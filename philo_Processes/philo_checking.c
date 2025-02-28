@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_bonus_checking.c                             :+:      :+:    :+:   */
+/*   philo_checking.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:03:38 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/12 12:35:03 by mohilali         ###   ########.fr       */
+/*   Updated: 2025/02/28 15:27:00 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "philo.h"
 
 int	check_number_of_eat(t_philos *philo)
 {
