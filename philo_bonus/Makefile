@@ -6,7 +6,7 @@
 #    By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 12:48:24 by mohilali          #+#    #+#              #
-#    Updated: 2024/02/12 18:45:32 by mohilali         ###   ########.fr        #
+#    Updated: 2024/02/13 08:35:20 by mohilali         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ HEADER_NAME = philo_bonus.h
 all : $(NAME)
 
 $(NAME) : $(OBJCT)
-	$(CC) $(OBJCT) -pthread -o $(NAME)
+	$(CC) $(OBJCT) -pthread -o $(NAME) -fsanitize=thread
 
 %.o : %.c $(HEADER_NAME)
 	$(CC) $(CFLAGS) -c $< -o $@

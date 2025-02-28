@@ -6,7 +6,7 @@
 /*   By: mohilali <mohilali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 17:37:13 by mohilali          #+#    #+#             */
-/*   Updated: 2024/02/12 18:57:51 by mohilali         ###   ########.fr       */
+/*   Updated: 2024/02/16 17:25:39 by mohilali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,30 @@
 void	ft_think(t_philos *philos)
 {
 	pthread_mutex_lock(philos->print);
+	pthread_mutex_lock(philos->mutex);
 	if (*(philos->died) == 0)
 		print_message(philos->id, philos->start_time, THINK);
+	pthread_mutex_unlock(philos->mutex);
 	pthread_mutex_unlock(philos->print);
 }
 
 void	ft_take_fork(t_philos *philos)
 {
 	pthread_mutex_lock(philos->print);
+	pthread_mutex_lock(philos->mutex);
 	if (*(philos->died) == 0)
 		print_message(philos->id, philos->start_time, FORKS);
+	pthread_mutex_unlock(philos->mutex);
 	pthread_mutex_unlock(philos->print);
 }
 
 void	ft_sleep(t_philos *philos)
 {
 	pthread_mutex_lock(philos->print);
+	pthread_mutex_lock(philos->mutex);
 	if (*(philos->died) == 0)
 		print_message(philos->id, philos->start_time, SLEEP);
+	pthread_mutex_unlock(philos->mutex);
 	pthread_mutex_unlock(philos->print);
 	ft_usleep(philos->time_sleep);
 }
