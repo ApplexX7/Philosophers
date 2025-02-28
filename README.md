@@ -57,13 +57,15 @@ Philosophers/
 └── libft/               # Shared utilities
 
 ```
-## Choosing an Implementation
+## Choosing an Implementation :
+```
 # Use Threads version when:
-# - Small number of philosophers (2-50)
-# - Shared resource monitoring needed
+#  - Small number of philosophers (2-50)
+#  - Shared resource monitoring needed
 # - Lower memory footprint required
 
 # Use Process version when:
 # - Large number of philosophers (50+)
 # - Need process isolation for stability
 # - Distributed systems simulation
+```
